@@ -53,6 +53,7 @@ export async function s3Upload(file, userToken) {
   await getAwsCredentials(userToken);
 
   const s3 = new AWS.S3({
+    region: config.cognito.REGION,
     params: {
       Bucket: config.s3.BUCKET,
     }
