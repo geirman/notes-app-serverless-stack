@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { FormGroup, FormControl, ControlLabel } from "react-bootstrap";
+import { Alert, FormGroup, FormControl, ControlLabel } from "react-bootstrap";
 
 import LoaderButton from "../components/LoaderButton";
 import "./Login.css";
@@ -21,7 +21,8 @@ class Login extends Component {
 
     this.state = {
       username: "",
-      password: ""
+      password: "",
+      errorMessage: ""
     };
   }
 
@@ -69,8 +70,10 @@ class Login extends Component {
       );
       this.props.updateUserToken(userToken);
     } catch (e) {
-      alert(e);
-      this.setState({ isLoading: false });
+      this.setState({ 
+        isLoading: false,
+        errorMessage: e.message
+      });
     }
   };
 
@@ -85,6 +88,7 @@ class Login extends Component {
     return (
       <div className="Login">
         <form onSubmit={this.handleSubmit}>
+          {this.state.errorMessage.length > 0 && <Alert bsStyle="danger">{this.state.errorMessage}</Alert>}
           <FormGroup controlId="username" bsSize="large">
             <ControlLabel>Email</ControlLabel>
             <FormControl
