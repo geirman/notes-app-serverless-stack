@@ -1,82 +1,87 @@
-import React, { Component } from 'react';
-import {
-  FormGroup,
-  FormControl,
-  ControlLabel,
-} from 'react-bootstrap';
+import React, { Component } from "react";
+import { FormGroup, FormControl, ControlLabel } from "react-bootstrap";
 
-import LoaderButton from '../components/LoaderButton';
-import './Login.css';
+import LoaderButton from "../components/LoaderButton";
+import "./Login.css";
 
-import { withRouter } from 'react-router-dom';
-import config from '../config.js';
+import { withRouter } from "react-router-dom";
+import config from "../config.js";
 
 import {
   CognitoUserPool,
   AuthenticationDetails,
   CognitoUser
-} from 'amazon-cognito-identity-js';
+} from "amazon-cognito-identity-js";
+
+import Confetti from "react-dom-confetti";
 
 class Login extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      username: '',
-      password: '',
+      username: "",
+      password: ""
     };
   }
 
   login(username, password) {
     const userPool = new CognitoUserPool({
-        UserPoolId: config.cognito.USER_POOL_ID,
-        ClientId: config.cognito.APP_CLIENT_ID
+      UserPoolId: config.cognito.USER_POOL_ID,
+      ClientId: config.cognito.APP_CLIENT_ID
     });
     const authenticationData = {
-        isLoading: false,
-        Username: username,
-        Password: password
+      isLoading: false,
+      Username: username,
+      Password: password
     };
 
     const user = new CognitoUser({ Username: username, Pool: userPool });
     const authenticationDetails = new AuthenticationDetails(authenticationData);
 
-    return new Promise((resolve, reject) => (
-        user.authenticateUser(authenticationDetails, {
-        onSuccess: (result) => resolve(result.getIdToken().getJwtToken()),
-        onFailure: (err) => reject(err),
-        })
-    ));
+    return new Promise((resolve, reject) =>
+      user.authenticateUser(authenticationDetails, {
+        onSuccess: result => resolve(result.getIdToken().getJwtToken()),
+        onFailure: err => reject(err)
+      })
+    );
   }
-
 
   validateForm() {
-    return this.state.username.length > 0
-      && this.state.password.length > 0;
+    return this.state.username.length > 0 && this.state.password.length > 0;
   }
 
-  handleChange = (event) => {
+  handleChange = event => {
     this.setState({
       [event.target.id]: event.target.value
     });
-  }
+  };
 
-  handleSubmit = async (event) => {
+  handleSubmit = async event => {
     event.preventDefault();
 
     this.setState({ isLoading: true });
-    
+
     try {
-        const userToken = await this.login(this.state.username, this.state.password);
-        this.props.updateUserToken(userToken);
+      const userToken = await this.login(
+        this.state.username,
+        this.state.password
+      );
+      this.props.updateUserToken(userToken);
+    } catch (e) {
+      alert(e);
+      this.setState({ isLoading: false });
     }
-    catch(e) {
-        alert(e);
-        this.setState({ isLoading: false });
-    }
-  }
+  };
 
   render() {
+    const config = {
+      angle: 90,
+      spread: 60,
+      startVelocity: 20,
+      elementCount: 40,
+      decay: 0.95
+    };
     return (
       <div className="Login">
         <form onSubmit={this.handleSubmit}>
@@ -86,23 +91,27 @@ class Login extends Component {
               autoFocus
               type="email"
               value={this.state.username}
-              onChange={this.handleChange} />
+              onChange={this.handleChange}
+            />
           </FormGroup>
           <FormGroup controlId="password" bsSize="large">
             <ControlLabel>Password</ControlLabel>
             <FormControl
               value={this.state.password}
               onChange={this.handleChange}
-              type="password" />
+              type="password"
+            />
           </FormGroup>
+          <Confetti active={this.state.isLoading} config={config} />
           <LoaderButton
-              block
-              bsSize="large"
-              disabled={ ! this.validateForm() }
-              type="submit"
-              isLoading={this.state.isLoading}
-              text="Login"
-              loadingText="Logging in…" />
+            block
+            bsSize="large"
+            disabled={!this.validateForm()}
+            type="submit"
+            isLoading={this.state.isLoading}
+            text="Login"
+            loadingText="Logging in…"
+          />
         </form>
       </div>
     );
