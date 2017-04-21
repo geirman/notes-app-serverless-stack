@@ -18,6 +18,10 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "predeploy": "npm run build",
+    "deploy": "aws s3 sync build/ s3://notes-app-client-geirman",
+    "postdeploy": "aws cloudfront create-invalidation --distribution-id E1LYB1DGZ6Q8R2 --paths '/*' && aws cloudfront create-invalidation --distribution-id E32R4MDE3JHCWW --paths '/*'"
   }
 }
+
