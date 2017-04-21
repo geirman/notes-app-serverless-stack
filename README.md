@@ -3,7 +3,7 @@ These files represent my completed app after following the VERY GOOD tutorial at
 
 The completed app can be viewed at the following two urls...
 - http://notes-app-client-geirman.s3-website-us-east-1.amazonaws.com
-- http://kikitty.com
+- https://kikitty.com
 
 ## Requires Config File
 Create the following config file here `client/src/config.js` with the following structure
